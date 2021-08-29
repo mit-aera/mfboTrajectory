@@ -45,7 +45,7 @@ class TrajSampler():
             constraints = [X >> np.eye(N)*1e-4]
             constraints += [X[i,i] == 1 for i in range(N)]
             prob = cp.Problem(cp.Minimize(cp.trace(R@X)), constraints)
-            prob.solve()
+            prob.solve(solver=cp.CVXOPT)
             self.cov = np.array(X.value)
         
         self.sigma = sigma

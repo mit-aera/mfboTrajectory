@@ -8,7 +8,7 @@ docker run \
     --rm \
     --gpus all\
     --volume "${DIR}/../mfboTrajectory:/root/mfboTrajectory" \
-    --name py_traj_utils \
+    --name mfbo_traj \
     --privileged \
     --net "host" \
     mfbo_traj

@@ -51,7 +51,6 @@ class MFBOAgentBase():
         
         self.delta_L = kwargs.get('delta_L', 0.8)
         self.delta_H = kwargs.get('delta_H', 0.4)
-        self.delta_discard = kwargs.get('delta_discard', 0.05)
         self.beta = kwargs.get('beta', 0.05)
         self.dim = self.X_H.shape[1]
         self.iter_create_model = kwargs.get('iter_create_model', 200)
@@ -292,13 +291,6 @@ class MFBOAgentBase():
                 x_cand_denorm = self.lb_i + np.multiply(self.X_cand[ent_H.argmax(),:self.t_dim],self.ub_i-self.lb_i)
                 self.min_time_cand = x_cand_denorm.dot(self.t_set_sim)/np.sum(self.t_set_sim)
         
-        # Discard confident samples
-        X_cand_discard_t = np.concatenate((np.where(prob_cand_L_mean<self.delta_discard)[0],np.where(prob_cand_L_mean>1-self.delta_discard)[0]),axis=0)
-        X_cand_discard = np.append(X_cand_discard, X_cand_discard_t, axis=0)
-        if X_cand_discard.shape[0] > 0:
-            print(self.X_cand[X_cand_discard][0])
-            self.X_cand = np.delete(self.X_cand, X_cand_discard, axis=0)
-        
         self.alpha_min_cand = copy.deepcopy(self.X_next)
         self.alpha_min_cand[:self.t_dim] = self.lb_i + np.multiply(self.X_next[:self.t_dim],self.ub_i-self.lb_i)
         if self.X_next_fidelity == 1:
@@ -381,13 +373,6 @@ class MFBOAgentBase():
             prGreen("ent_L: {}, ent_H: {}".format(np.max(ent_L),np.max(ent_H)))
             x_cand_denorm = self.lb_i + np.multiply(self.X_cand[ent_H.argmax(),:self.t_dim],self.ub_i-self.lb_i)
             self.min_time_cand = x_cand_denorm.dot(self.t_set_sim)/np.sum(self.t_set_sim)
-        
-        # Discard confident samples
-        X_cand_discard_t = np.concatenate((np.where(prob_cand_L_mean<self.delta_discard)[0],np.where(prob_cand_L_mean>1-self.delta_discard)[0]),axis=0)
-        X_cand_discard = np.append(X_cand_discard, X_cand_discard_t, axis=0)
-        if X_cand_discard.shape[0] > 0:
-            print(self.X_cand[X_cand_discard][0])
-            self.X_cand = np.delete(self.X_cand, X_cand_discard, axis=0)
         
         self.alpha_min_cand = self.lb_i + np.multiply(self.X_next[:,:self.t_dim],self.ub_i-self.lb_i)
         if self.X_next_fidelity == 1:
@@ -563,52 +548,6 @@ class MFBOAgentBase():
         mean, var, prob_cand = self.forward_test()
         
         ent_cand = -np.abs(mean)/(var + 1e-9)
-
-#         fig = plt.figure(1,figsize=(5.5,10))
-#         plt.clf()
-#         fig.set_size_inches(5.5,10)
-#         plt.subplot(211)
-        
-#         cnt = plt.tricontourf(self.X_cand[:,0], self.X_cand[:,1], prob_cand, np.linspace(0,1,100),cmap='coolwarm')
-#         for c in cnt.collections:
-#             c.set_edgecolor("face")
-
-#         cb = plt.colorbar(ticks = [0,1])
-#         cb.set_label('class probability [-]', labelpad = -10)
-        
-#         labels = cb.ax.get_yticklabels()
-#         labels[0].set_verticalalignment("bottom")
-#         labels[-1].set_verticalalignment("top")
-
-#         plt.scatter(self.X_H[:-1,0],self.X_H[:-1,1],c=self.Y_H[:-1],cmap='coolwarm')
-#         for k in range(self.N_H-self.N_H_i):
-#             plt.text(self.X_H[self.N_H_i+k,0],self.X_H[self.N_H_i+k,1], str(k+1), fontsize=12, color='green')
-
-#         plt.scatter([self.X_next[0]],[self.X_next[1]],color = 'k',marker = '*')
-
-#         plt.xlim([0,1])
-#         plt.ylim([0,1])
-
-#         prettyplot("$\mathregular{X_1}$", "$\mathregular{X_2}$", ylabelpad = -10)
-
-#         plt.subplot(212)
-#         cnt = plt.tricontourf(self.X_cand[:,0],self.X_cand[:,1],ent_cand,100,cmap='coolwarm')
-
-#         for c in cnt.collections:
-#             c.set_edgecolor("face")
-#         plt.colorbar(label = 'active learning [-]', ticks = [],cmap='coolwarm')
-#         plt.scatter(self.X_H[:-1,0],self.X_H[:-1,1],c=self.Y_H[:-1],cmap='coolwarm')
-#         plt.xlim([0,1])
-#         plt.ylim([0,1])
-
-#         plt.scatter([self.X_next[0]],[self.X_next[1]],color = 'k',marker = '*')
-#         for k in range(self.N_H-self.N_H_i):
-#             plt.text(self.X_H[self.N_H_i+k,0],self.X_H[self.N_H_i+k,1], str(k+1), fontsize=12, color='green')
-
-#         prettyplot("$\mathregular{X_1}$", "$\mathregular{X_2}$", ylabelpad = -10)
-#         plt.tight_layout()
-#         plt.savefig(filename)
-#         plt.close()
 
         fig = plt.figure(1,figsize=(9,7.5))
         plt.clf()

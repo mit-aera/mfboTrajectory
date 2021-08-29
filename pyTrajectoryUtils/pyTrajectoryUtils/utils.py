@@ -487,11 +487,17 @@ class BaseTrajFunc(object):
         yaw_ret[:,2] = ddyaw
         
         return yaw_ret
-    
+
     def check_flag_loop(self, t_set, d_ordered):
-        if d_ordered.shape[0] % t_set.shape[0] == 0 and t_set.shape[0] != 1:
+        if d_ordered.shape[0] == t_set.shape[0]*self.N_DER and t_set.shape[0] != 1:
             return True
         elif d_ordered.shape[0] == self.N_DER and t_set.shape[0] == 1:
+            return True
+        else:
+            return False
+
+    def check_flag_loop_points(self, t_set, points):
+        if points.shape[0] == t_set.shape[0]:
             return True
         else:
             return False

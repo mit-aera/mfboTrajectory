@@ -214,28 +214,31 @@ if __name__ == "__main__":
     print(res_path)
     flag_check = check_result_data(filedir,filename_res,MAX_ITER)
     if not flag_check:
-        model_mfdgp = ActiveMFDGP(X_L=X_L, Y_L=Y_L, X_H=X_H, Y_H=Y_H, \
-                        lb_i=lb_i, ub_i=ub_i, rand_seed=rand_seed_, \
-                        C_L=1.0, C_H=10.0, \
-                        delta_L=0.9, delta_H=0.6, delta_discard=0.2, beta=3.0, N_cand=16384, \
-                        gpu_batch_size=1024, \
-                        sampling_func_L=low_fidelity, \
-                        sampling_func_H=high_fidelity, \
-                        t_set_sim=t_set_sim, \
-                        utility_mode=0, sampling_mode=5, \
-                        model_prefix=logprefix, \
-                        iter_create_model=200)
+        mfbo_model = ActiveMFDGP( \
+            X_L=X_L, Y_L=Y_L, X_H=X_H, Y_H=Y_H, \
+            lb_i=lb_i, ub_i=ub_i, rand_seed=rand_seed_, \
+            C_L=1.0, C_H=10.0, \
+            delta_L=0.9, delta_H=0.6, \
+            beta=3.0, N_cand=16384, \
+            gpu_batch_size=1024, \
+            sampling_func_L=low_fidelity, \
+            sampling_func_H=high_fidelity, \
+            t_set_sim=t_set_sim, \
+            utility_mode=0, sampling_mode=5, \
+            model_prefix=logprefix, \
+            iter_create_model=200)
 
         path_exp_data = os.path.join(filedir, filename_exp)
         if args.flag_load_exp_data and path.exists(path_exp_data):
-            model_mfdgp.load_exp_data(filedir=filedir, filename=filename_exp)
+            mfbo_model.load_exp_data(filedir=filedir, filename=filename_exp)
             
-        if hasattr(model_mfdgp, 'start_iter'):
-            curr_iter = model_mfdgp.start_iter
+        if hasattr(mfbo_model, 'start_iter'):
+            curr_iter = mfbo_model.start_iter
         prGreen("curr_iter: {}".format(curr_iter))
 
-        model_mfdgp.active_learning(N=MAX_ITER, plot=False, MAX_low_fidelity=50, \
-                          filedir=filedir, \
-                          filename_result=filename_res, \
-                          filename_exp=filename_exp)
+        mfbo_model.active_learning( \
+            N=MAX_ITER, plot=False, MAX_low_fidelity=50, \
+            filedir=filedir, \
+            filename_result=filename_res, \
+            filename_exp=filename_exp)
 

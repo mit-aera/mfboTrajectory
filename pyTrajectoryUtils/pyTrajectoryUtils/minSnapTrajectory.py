@@ -45,7 +45,7 @@ class MinSnapTrajectory(BaseTrajFunc):
                           mu=1.0, kt=0):
         points_mean = np.mean(np.abs(points[:,:3]))
         points_mean_global = np.mean(points[:,:3],axis=0)
-        flag_loop = self.check_flag_loop(t_set,points[:,:3])
+        flag_loop = self.check_flag_loop_points(t_set,points[:,:3])
         N_POLY = t_set.shape[0]
         
         pos_obj = lambda x, b: self.snap_obj(x,b,
@@ -200,7 +200,7 @@ class MinSnapTrajectory(BaseTrajFunc):
     ###############################################################################
     def snap_obj(self, x, b, b_ext_init=None, b_ext_end=None, 
                  deg_init_min=0, deg_init_max=4, deg_end_min=0, deg_end_max=0, kt=0):
-        flag_loop = self.check_flag_loop(x,b)
+        flag_loop = self.check_flag_loop_points(x,b)
         N_POLY = x.shape[0]
         if np.any(b_ext_init == None):
             b_ext_init = np.zeros((deg_init_max-deg_init_min,b.shape[1]))
@@ -256,7 +256,7 @@ class MinSnapTrajectory(BaseTrajFunc):
     
     def acc_obj(self, x, b, b_ext_init=None, b_ext_end=None, 
                  deg_init_min=0, deg_init_max=2, deg_end_min=0, deg_end_max=0):
-        flag_loop = self.check_flag_loop(x,b)
+        flag_loop = self.check_flag_loop_points(x,b)
         N_POLY = x.shape[0]
         if np.any(b_ext_init == None):
             b_ext_init = np.zeros((deg_init_max-deg_init_min,b.shape[1]))
@@ -283,8 +283,8 @@ class MinSnapTrajectory(BaseTrajFunc):
                                     np.arange(b.shape[0]+deg_init_max,R.shape[0])), axis=0)
         else:
             R_idx = np.concatenate((np.arange(b.shape[0],b.shape[0]+deg_init_min),
-                                    np.arange(b.shape[0]+deg_init_max,R.shape[0]-self.N_DER+1+deg_end_min),
-                                    np.arange(R.shape[0]-self.N_DER+1+deg_end_max,R.shape[0])), axis=0)
+                                    np.arange(b.shape[0]+deg_init_max,R.shape[0]-self.N_DER_YAW+1+deg_end_min),
+                                    np.arange(R.shape[0]-self.N_DER_YAW+1+deg_end_max,R.shape[0])), axis=0)
         Rpp = R[np.ix_(R_idx,R_idx)]
         Rpp_inv = self.get_matrix_inv(Rpp)
         d_p = -Rpp_inv.dot(R[np.ix_(np.arange(b.shape[0]),R_idx)].T).dot(b)
