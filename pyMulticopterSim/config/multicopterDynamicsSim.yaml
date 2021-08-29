@@ -1,0 +1,67 @@
+flightgoggles_uav_dynamics:
+    init_pose: [0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0]
+    # Uncomment clockscale for manual clock scaling rate.
+    # While commented out and use_sim_time=1, FG will auto scale clock
+    # for 60hz camera operation.
+    # clockscale: 1.0
+    ignore_collisions: false
+    vehicle_mass: 1.0
+    vehicle_inertia_xx: 0.0049
+    vehicle_inertia_yy: 0.0049
+    vehicle_inertia_zz: 0.0069
+    max_prop_speed: 2200.0
+    moment_arm: 0.08
+    motor_time_constant: 0.02
+    motor_rotational_inertia: 6.62e-6
+    thrust_coefficient: 1.91e-6
+    torque_coefficient: 2.6e-7
+    drag_coefficient: 0.1
+    aeromoment_coefficient_xx: 0.003
+    aeromoment_coefficient_yy: 0.003
+    aeromoment_coefficient_zz: 0.003
+#     moment_process_noise: 1.25e-7
+#     force_process_noise: 0.0005
+    moment_process_noise: 0.0
+    force_process_noise: 0.0
+    use_ratethrust_controller: true
+    use_rungekutta4integrator: false
+
+flightgoggles_imu:
+#     accelerometer_variance: 0.005
+#     gyroscope_variance: 0.003
+    accelerometer_variance: 0.0
+    gyroscope_variance: 0.0
+    accelerometer_biasprocess: 1.0e-7
+    gyroscope_biasprocess: 1.0e-7
+    accelerometer_biasinitvar: 0.0
+    gyroscope_biasinitvar: 0.0
+
+flightgoggles_laser:
+    rangefinder_variance: 0.009
+    rangefinder_max_range: 20.0
+
+flightgoggles_lpf:
+    gain_p: 35530.5758439217
+    gain_q: 266.572976289502
+
+flightgoggles_pid:
+    gain_p_roll: 9.0
+    gain_i_roll: 3.0
+    gain_d_roll: 0.3
+    gain_p_pitch: 9.0
+    gain_i_pitch: 3.0
+    gain_d_pitch: 0.3
+    gain_p_yaw: 9.0
+    gain_i_yaw: 3.0
+    gain_d_yaw: 0.3
+    int_bound_roll: 1000.0
+    int_bound_pitch: 1000.0
+    int_bound_yaw: 1000.0
+    vehicle_inertia_xx: 0.0049
+    vehicle_inertia_yy: 0.0049
+    vehicle_inertia_zz: 0.0069
+    moment_arm: 0.08
+    thrust_coefficient: 1.91e-6
+    torque_coefficient: 2.6e-7
+
+sim_freq: 960 # Hz

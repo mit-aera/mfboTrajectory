@@ -1,0 +1,29 @@
+  
+uav_model:
+    default:
+        vehicle_mass: 1.0
+        vehicle_inertia_xx: 0.0049
+        vehicle_inertia_yy: 0.0049
+        vehicle_inertia_zz: 0.0069
+
+motor_model:
+    motor_inertia: 6.62e-6
+    max_prop_speed: 2200.0
+    min_prop_speed: 0.0
+    moment_arm: 0.08
+    motor_time_constant: 0.02
+    thrust_coefficient: 1.91e-6
+    torque_coefficient: 2.6e-7
+    drag_coefficient: 0.1
+    angular_process_noise: 1.25e-7
+    linear_process_noise: 0.0005
+    reset_timeout: 0.1
+    min_arming_thrust: 9.9
+
+imu_model:
+    accelerometer_variance: 0.005
+    gyroscope_variance: 0.003
+
+simulation:
+    init_pose: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0]
+    gravity: 9.81

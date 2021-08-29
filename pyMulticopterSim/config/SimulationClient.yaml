@@ -1,0 +1,5 @@
+vehicle_model:
+    uav1:
+        type: "uav"
+        initialPose: [0,0,0,1,0,0,0,0]
+        imu_freq: 200
