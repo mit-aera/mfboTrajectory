@@ -45,11 +45,10 @@ python run_mfbo_polytopes_robot.py
 ## Citation
 If you find this work useful for your research, please cite:
 ```bibtex
-@inproceedings{ryou2020,
+@inproceedings{ryou_tal_ijrr,
   title={Multi-Fidelity Black-Box Optimization for Time-Optimal Quadrotor Maneuvers},
-  url = {http://www.roboticsproceedings.org/rss16/p032.pdf},
+  url = {https://doi.org/10.1177/02783649211033317},
   author={Ryou, Gilhyun and Tal, Ezra and Karaman, Sertac},
-  booktitle={Robotics: Science and Systems (RSS)},
-  year={2020}
+  booktitle={The International Journal of Robotics Research (IJRR)}
 }
 ```
