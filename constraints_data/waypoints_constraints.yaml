@@ -1,5 +1,3 @@
-  
-# list: ['rand_mini1_yaw', 'rand5_large_yaw_new', 'butterflyU_yaw_new', 'helix_small_yaw', 'rand4_large_yaw', 'winter_small_yaw', 'star_small_yaw', 'roller_coaster_sparse2_yaw', 'pinhole_sparse_yaw_new']  
 list: ['traj_0', 'traj_1', 'traj_2', 'traj_3', 'traj_4', 'traj_5', 'traj_6', 'traj_7', 'traj_8']
 
 # NED coordinate
