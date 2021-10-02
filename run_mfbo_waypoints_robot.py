@@ -81,8 +81,12 @@ def meta_high_fidelity_robot(poly, traj_tool, alpha_set, t_set_robot, points, \
         
         if not os.path.exists("./mfbo_data/robot_exp_traj/"):
             os.makedirs("./mfbo_data/robot_exp_traj/")
-        traj_tool.save_trajectory_yaml(t_set_tmp, d_ordered_tmp, d_ordered_yaw_tmp, traj_dir="./mfbo_data/robot_exp_traj/", traj_name="{}_{}_iter{}".format(sample_name_, rand_seed_, 0))
-        traj_tool.save_trajectory_csv(t_set_tmp, d_ordered_tmp, d_ordered_yaw_tmp, traj_dir="./mfbo_data/robot_exp_traj/", traj_name="{}_{}_iter{}".format(sample_name_, rand_seed_, curr_iter), freq=200)
+        traj_tool.save_trajectory_yaml(
+            t_set_tmp, d_ordered_tmp, d_ordered_yaw_tmp, 
+            traj_dir="./mfbo_data/robot_exp_traj/", traj_name="{}_{}_iter{}".format(sample_name_, rand_seed_, curr_iter))
+        traj_tool.save_trajectory_csv(
+            t_set_tmp, d_ordered_tmp, d_ordered_yaw_tmp, 
+            traj_dir="./mfbo_data/robot_exp_traj/", traj_name="{}_{}_iter{}".format(sample_name_, rand_seed_, curr_iter), freq=200)
         
         while True:
             print('Enter experiment result (success:1/fail:0) :')
