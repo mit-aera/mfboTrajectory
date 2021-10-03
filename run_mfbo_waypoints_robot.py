@@ -16,9 +16,17 @@ from mfboTrajectory.agents import ActiveMFDGP
 from mfboTrajectory.minSnapTrajectoryWaypoints import MinSnapTrajectoryWaypoints
 from mfboTrajectory.multiFidelityModelWaypoints import meta_low_fidelity, meta_high_fidelity, get_dataset_init, check_dataset_init
 
-
-global curr_iter
-curr_iter=0
+class BayesOptCounter():
+    def __init__(self):
+        self.iter = 0
+    def get_iter(self):
+        return self.iter
+    def set_iter(self, x):
+        self.iter = x
+        return
+    def inc_iter(self):
+        self.iter += 1
+        return
 
 def run_sim_multicore(args):
     points = args[0]
@@ -60,8 +68,12 @@ def meta_low_fidelity_robot_multicore(poly, alpha_set, t_set_sim, points, lb=0.6
             label[it] = 1
     return label
 
-def meta_high_fidelity_robot(poly, traj_tool, alpha_set, t_set_robot, points, \
-                       lb=0.6, ub=1.4, return_snap=False, yaw_mode=0):
+def meta_high_fidelity_robot( \
+    poly, traj_tool, alpha_set, t_set_robot, points, \
+    lb=0.6, ub=1.4, return_snap=False, yaw_mode=0, counter=None):
+    
+    counter.inc_iter()
+    
     t_dim = t_set_robot.shape[0]
     lb_i = np.ones(t_dim)*lb
     ub_i = np.ones(t_dim)*ub
@@ -77,16 +89,17 @@ def meta_high_fidelity_robot(poly, traj_tool, alpha_set, t_set_robot, points, \
         
         t_set_tmp, d_ordered_tmp, d_ordered_yaw_tmp \
             = poly.update_traj_(points, t_set_robot, alpha_tmp)
-        rand_seed_ = np.random.get_state()[1][0]
+        
+        curr_iter = counter.get_iter()
         
         if not os.path.exists("./mfbo_data/robot_exp_traj/"):
             os.makedirs("./mfbo_data/robot_exp_traj/")
         traj_tool.save_trajectory_yaml(
             t_set_tmp, d_ordered_tmp, d_ordered_yaw_tmp, 
-            traj_dir="./mfbo_data/robot_exp_traj/", traj_name="{}_{}_iter{}".format(sample_name_, rand_seed_, curr_iter))
+            traj_dir="./mfbo_data/robot_exp_traj/", traj_name="{}_iter{}".format(sample_name_, curr_iter))
         traj_tool.save_trajectory_csv(
             t_set_tmp, d_ordered_tmp, d_ordered_yaw_tmp, 
-            traj_dir="./mfbo_data/robot_exp_traj/", traj_name="{}_{}_iter{}".format(sample_name_, rand_seed_, curr_iter), freq=200)
+            traj_dir="./mfbo_data/robot_exp_traj/", traj_name="{}_iter{}".format(sample_name_, curr_iter), freq=200)
         
         while True:
             print('Enter experiment result (success:1/fail:0) :')
@@ -150,8 +163,8 @@ if __name__ == "__main__":
         flag_yaw_zero = False
     
     print("Trajectory {}".format(sample_name_))
-    poly = MinSnapTrajectoryWaypoints(drone_model=drone_model, yaw_mode=yaw_mode)
-    traj_tool = TrajectoryTools(MAX_POLY_DEG = 9, MAX_SYS_DEG = 4, N_POINTS = 20)
+    poly = MinSnapTrajectoryWaypoints(drone_model=drone_model, yaw_mode=yaw_mode, N_POINTS = 40)
+    traj_tool = TrajectoryTools(MAX_POLY_DEG = 9, MAX_SYS_DEG = 4, N_POINTS = 40)
     points, t_set_sta = get_waypoints(yaml_name, sample_name_, flag_t_set=True)
     
     alpha_robot = args.alpha_robot
@@ -176,9 +189,11 @@ if __name__ == "__main__":
         t_set_sim = t_set_sta * alpha_sim
         t_set_robot = t_set_sta * alpha_robot
         
+        bo_counter = BayesOptCounter()
         low_fidelity_multicore = lambda x, debug=False: meta_low_fidelity_robot_multicore(poly, x, t_set_sim, points, lb=lb, ub=ub)
         low_fidelity = lambda x, debug=False: meta_high_fidelity(poly, x, t_set_sim, points, lb=lb, ub=ub)
-        high_fidelity = lambda x, return_snap=False: meta_high_fidelity_robot(poly, traj_tool, x, t_set_robot, points, lb=lb, ub=ub, return_snap=return_snap)
+        high_fidelity = lambda x, return_snap=False: meta_high_fidelity_robot(\
+            poly, traj_tool, x, t_set_robot, points, lb=lb, ub=ub, return_snap=return_snap, counter=bo_counter)
 
     else:
         print("Initializing dataset")
@@ -194,11 +209,13 @@ if __name__ == "__main__":
         print("alpha_sim: {}".format(alpha_sim))
         print("alpha_robot: {}".format(alpha_robot))
     
+        bo_counter = BayesOptCounter()
         low_fidelity_multicore = lambda x, debug=False: meta_low_fidelity_robot_multicore(poly, x, t_set_sim, points, lb=lb, ub=ub)
         low_fidelity = lambda x, debug=False: meta_high_fidelity(poly, x, t_set_sim, points, lb=lb, ub=ub)
-        high_fidelity = lambda x, return_snap=False: meta_high_fidelity_robot(poly, traj_tool, x, t_set_robot, points, lb=lb, ub=ub, return_snap=return_snap)
+        high_fidelity = lambda x, return_snap=False: meta_high_fidelity_robot( \
+            poly, traj_tool, x, t_set_robot, points, lb=lb, ub=ub, return_snap=return_snap, counter=bo_counter)
         X_L, Y_L, X_H, Y_H = get_dataset_init(sample_name_, alpha_sim, low_fidelity, high_fidelity, \
-                                 t_dim, N_L=1000, N_H=20, lb=lb, ub=ub, sampling_mode=2, alpha_robot=alpha_robot)
+            t_dim, N_L=1000, N_H=20, lb=lb, ub=ub, sampling_mode=2, alpha_robot=alpha_robot)
     
     t_dim = t_set_sta.shape[0]
     lb_i = np.ones(t_dim)*lb
@@ -235,10 +252,10 @@ if __name__ == "__main__":
         path_exp_data = os.path.join(filedir, filename_exp)
         if args.flag_load_exp_data and path.exists(path_exp_data):
             mfbo_model.load_exp_data(filedir=filedir, filename=filename_exp)
-            
+        
         if hasattr(mfbo_model, 'start_iter'):
-            curr_iter = mfbo_model.start_iter
-        prGreen("curr_iter: {}".format(curr_iter))
+            bo_counter.set_iter(mfbo_model.start_iter)
+        prGreen("curr_iter: {}".format(bo_counter.get_iter()))
 
         mfbo_model.active_learning( \
             N=MAX_ITER, plot=False, MAX_low_fidelity=50, \
