@@ -250,7 +250,7 @@ class MinSnapTrajectory(BaseTrajFunc):
         res = np.trace(d_tmp.T.dot(R).dot(d_tmp)) + kt*np.sum(x)
         d_ordered = P.T.dot(d_tmp)
         
-        if res < 0:
+        if res < -1e-6::
             res = 1e10
         return res, d_ordered
     
@@ -303,7 +303,7 @@ class MinSnapTrajectory(BaseTrajFunc):
         res = np.trace(d_tmp.T.dot(R).dot(d_tmp))
         d_ordered = P.T.dot(d_tmp)
         
-        if res < 0:
+        if res < -1e-6::
             res = 1e10
         return res, d_ordered
     
