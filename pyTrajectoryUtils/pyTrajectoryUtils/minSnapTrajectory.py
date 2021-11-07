@@ -520,7 +520,7 @@ class MinSnapTrajectory(BaseTrajFunc):
                     t_set_tmp[i] += dt
 
                     f1, _ = pos_obj(x=t_set_tmp, b=b)
-                    f1_yaw, _ = yaw_obj(x=t_set, b=b_yaw)
+                    f1_yaw, _ = yaw_obj(x=t_set_tmp, b=b_yaw)
                     f1 += mu*f1_yaw
                     grad[i] = (f1-f0)/dt
 
